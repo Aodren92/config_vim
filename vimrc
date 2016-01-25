@@ -1,35 +1,53 @@
-" .vimrc
+" Install vundle if needed
+let vundle_readme=expand('~/.vim/bundle/Vundle.vim/README.md')
+if !filereadable(vundle_readme)
+    echo "Installing Vundle.."
+    echo ""
+    silent !mkdir -p ~/.vim/bundle
+    silent !git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
+endif
 
-set nocompatible                 " Vim is better than Vi
-set encoding=utf-8               " utf8 or gtfo
+set nocompatible              " be iMproved, required
+filetype off                  " required
 
-let mapleader = ' '        " leader key used by some plugins
-"let g:mapleader = ' '     " gvim leader key used by some plugins
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
-filetype plugin off
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
 
-" Pathogen plugin management
-call pathogen#infect()
-call pathogen#helptags()        " Generate doc for all plugins
+" color scheme
+Plugin 'fabi1cazenave/kalahari.vim'
 
-filetype plugin indent on        " activate filetype detection,
+" ide like
+Plugin 'kien/ctrlp.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'Geam/snipMate'
+Plugin 'scrooloose/syntastic'
+
+" fast editing
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+
+" syntax hilight
+Plugin 'octol/vim-cpp-enhanced-highlight'
+Plugin 'luochen1990/rainbow'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" if at school, load header plugin
+if filereadable('/goinfre')
+    source /usr/share/vim/vim73/plugin/stdheader.vim
+endif
 
 " Vimscript file settings {{{
 augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
-" }}}
-
-" stupid way of loading ftplugins {{{
-try
-    runtime! bundle/ccimpl/ftplugin/ccimpl.vim
-catch
-endtry
-try
-    runtime! python_match/ftplugin/python_match.vim
-catch
-endtry
 " }}}
 
 " auto-reload .vimrc {{{
@@ -41,15 +59,6 @@ augroup END " }
 
 " ruler with line number
 set number
-" toggle between relative and obsolute line number {{{
-function! NumberToggle()
-  if(&relativenumber == 1)
-    set number
-  else
-    set relativenumber
-  endif
-endfunc
-"}}}
 
 " Visual settings
 set t_Co=256                     " force vim to use 256 colors
@@ -79,7 +88,7 @@ set hidden                       " allow switching edited buffers without saving
 
 " break long lines visually (not actual lines)
 set wrap linebreak
-set tw=0 wm=0
+set textwidth=0 wrapmargin=0
 
 "set autowrite                   " Auto-save before :next, :make, etc.
 
@@ -100,7 +109,6 @@ if exists('+colorcolumn')
     "  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
 endif
 
-set textwidth=0
 "set whichwrap=<,>,h,l
 "map <C-UP> g k
 "map <C-UP> g k
@@ -153,16 +161,20 @@ if has("autocmd")
 
         " FileType {{{
         " http://tedlogan.com/techblog3.html
-        autocmd FileType sh setlocal ts=4 sts=4 sw=4 noet ai " sh
-        autocmd FileType c,cpp setlocal ts=4 sts=4 sw=4 noet ai " c
+        autocmd FileType sh setlocal ts=4 sts=4 sw=4 et ai " sh
+        autocmd FileType c setlocal ts=4 sts=4 sw=4 noet ai " c
+        autocmd FileType cpp setlocal ts=4 sts=4 sw=4 et ai " cpp
         autocmd FileType make setlocal ts=4 sts=4 sw=4 noet ai " Makefile
-        autocmd FileType vim setlocal ts=2 sts=2 sw=2 noet ai " Vim
-        autocmd FileType text setlocal ts=2 sts=2 sw=2 noet ai " Text
-        autocmd FileType markdown setlocal ts=4 sts=4 sw=4 noet ai " Markdown
-        autocmd FileType html setlocal ts=2 sts=2 sw=2 noet ai " (x)HTML
-        autocmd FileType php,java setlocal ts=2 sts=2 sw=2 noet ai nocindent " PHP & Java
-        autocmd FileType javascript setlocal ts=2 sts=2 sw=2 noet ai nocindent " JavaScript
+        autocmd FileType vim setlocal ts=4 sts=4 sw=4 et ai " Vim
+        autocmd FileType text setlocal ts=2 sts=2 sw=2 et ai " Text
+        autocmd FileType markdown setlocal ts=4 sts=4 sw=4 et ai " Markdown
+        autocmd FileType html setlocal ts=2 sts=2 sw=2 et ai " (x)HTML
+        autocmd FileType php,java setlocal ts=2 sts=2 sw=2 et ai nocindent " PHP & Java
+        autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et ai nocindent " JavaScript
         autocmd FileType python setlocal ts=4 sts=4 sw=4 et ai " Python
+        autocmd FileType ocaml setlocal ts=2 sts=2 sw=2 et ai " Ocaml
+        autocmd FileType lisp setlocal ts=2 sts=2 sw=2 et ai " Lisp
+        autocmd FileType go setlocal ts=2 sts=2 sw=2 et ai " go
         autocmd BufNewFile,BufRead *.h set ft=c
         autocmd BufNewFile,BufRead *.json set ft=javascript
         autocmd BufNewFile,BufRead *.webapp set ft=javascript
@@ -175,14 +187,6 @@ if has("autocmd")
     augroup delete_space
         autocmd!
         autocmd BufWrite * silent! %s/[\r \t]\+$//
-    augroup END
-    " }}}
-
-    " compilo {{{
-    augroup compilo
-        autocmd!
-        autocmd Filetype cpp :nnoremap <leader>m :!g++ -Wall -Wextra -Werror %
-        autocmd Filetype c :nnoremap <leader>m :!gcc -Wall -Wextra -Werror %
     augroup END
     " }}}
 
@@ -209,23 +213,14 @@ inoremap <C-U> <C-G>u<C-U>
 "inoremap <home> <nop>
 "inoremap <End> <nop>
 "inoremap <Up> <nop>
-
-" inactivate arrows, home and end keys in normal mode
-"noremap <Up> <nop>
-"noremap <Down> <nop>
-"noremap <Left> <nop>
-"noremap <Right> <nop>
-"noremap <home> <nop>
-"noremap <End> <nop>
-"noremap <Up> <nop>
 " }}}
 
 set backspace=indent,eol,start   " allow backspacing over everything in insert mode
 set formatoptions=cqrt           " comments newline when already in a comment
 
 " scroll more than one line up/down at a time
-" nnoremap <C-e> 3<C-e>
-" nnoremap <C-y> 3<C-y>
+nnoremap <C-e> 3<C-e>
+nnoremap <C-y> 3<C-y>
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
@@ -260,14 +255,18 @@ set splitbelow
 set splitright
 
 " Some shortcut for insert mode
+inoremap jh <esc>
 inoremap <Nul> <C-n>
 inoremap <c-u> <esc>viwUi<esc>`>
 " inoremap ( ()<left>
 " inoremap [ []<left>
 " inoremap { {}<left>
 
+nnoremap <C-b> :set relativenumber !<cr>
+inoremap <C-b> <Esc>:set relativenumber !<cr>i
+
 " NerdTree
-nnoremap <C-n> :NERDTreeTabsToggle<CR>
+nnoremap <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " Some shortcut with leader {{{
@@ -276,7 +275,7 @@ nnoremap <leader>a :wqa<cr>
 nnoremap <leader>! :qa!<cr>
 nnoremap <leader>t :tabedit<space>
 nnoremap <leader>ev :vs $MYVIMRC<cr>
-nnoremap <leader>n :NERDTreeFocusToggle<cr>
+nnoremap <leader>n :NERDTreeFocus<cr>
 nnoremap <leader>b :call NumberToggle()<cr>
 nnoremap <leader><tab> gt
 nnoremap <leader><leader> :!
@@ -290,6 +289,7 @@ let g:syntastic_style_error_symbol='>'
 let g:syntastic_warning_symbol='⚠'
 let g:syntastic_style_warning_symbol='>'
 let g:syntastic_c_include_dirs=[ '.', './includes', '../includes', './libft/includes' , '../libft/includes' ]
+let g:syntastic_cpp_compiler_options = ' -std=c++11'
 " }}}
 
 " Tmux compatibility {{{
