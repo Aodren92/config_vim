@@ -270,10 +270,13 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " Some shortcut with leader {{{
+let mapleader = ","
 nnoremap <leader>w :wa<cr>
 nnoremap <leader>a :wqa<cr>
 nnoremap <leader>! :qa!<cr>
 nnoremap <leader>t :tabedit<space>
+nnoremap <tab> :tabnext<cr>
+nnoremap <S-tab> :tabprevious<cr>
 nnoremap <leader>ev :vs $MYVIMRC<cr>
 nnoremap <leader>n :NERDTreeFocus<cr>
 nnoremap <leader>b :call NumberToggle()<cr>
